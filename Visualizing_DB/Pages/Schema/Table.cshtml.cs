@@ -19,6 +19,7 @@ public class TableModel : PageModel
 
     public TableInfo? Table { get; set; }
     public IEnumerable<string> RelatedTables { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<(TableInfo Table, ForeignKeyInfo ForeignKey)> TableReferences { get; set; } = Enumerable.Empty<(TableInfo, ForeignKeyInfo)>();
 
     public IActionResult OnGet()
     {
@@ -30,6 +31,7 @@ public class TableModel : PageModel
             return NotFound();
 
         RelatedTables = _repository.GetRelatedTables(Table);
+        TableReferences = _repository.GetTableReferences(Table.TableName);
         return Page();
     }
 }

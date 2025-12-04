@@ -122,7 +122,28 @@ else
                 </div>
             }
 
-            @if (!Model.ColumnForeignKeys.Any() && !Model.ColumnRelationships.Any())
+            @if (Model.ColumnReferences.Any())
+            {
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Referenced By</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Tables that reference this column:</p>
+                        @foreach (var reference in Model.ColumnReferences)
+                        {
+                            <div class="mb-2">
+                                <strong>Table:</strong>
+                                <a asp-page="/Schema/Table" asp-route-name="@reference.Table.TableName">@reference.Table.TableName</a><br>
+                                <strong>Column:</strong>
+                                <a asp-page="/Schema/Column" asp-route-table="@reference.Table.TableName" asp-route-column="@reference.ForeignKey.Column">@reference.ForeignKey.Column</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (!Model.ColumnForeignKeys.Any() && !Model.ColumnRelationships.Any() && !Model.ColumnReferences.Any())
             {
                 <div class="card">
                     <div class="card-header">

@@ -24,6 +24,7 @@ public class ColumnModel : PageModel
     public ColumnInfo? ColumnInfo { get; set; }
     public IEnumerable<ForeignKeyInfo> ColumnForeignKeys { get; set; } = Enumerable.Empty<ForeignKeyInfo>();
     public IEnumerable<RelationshipInfo> ColumnRelationships { get; set; } = Enumerable.Empty<RelationshipInfo>();
+    public IEnumerable<(TableInfo Table, ForeignKeyInfo ForeignKey)> ColumnReferences { get; set; } = Enumerable.Empty<(TableInfo, ForeignKeyInfo)>();
 
     public IActionResult OnGet()
     {
@@ -41,6 +42,8 @@ public class ColumnModel : PageModel
 
         ColumnRelationships = TableInfo.Relationships.Where(rel => 
             string.Equals(rel.ViaColumn, Column, StringComparison.OrdinalIgnoreCase));
+
+        ColumnReferences = _repository.GetColumnReferences(TableInfo.TableName, ColumnInfo.Name);
 
         return Page();
     }

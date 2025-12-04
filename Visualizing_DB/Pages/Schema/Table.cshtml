@@ -149,4 +149,33 @@ else
             }
         </div>
     }
+
+    @if (Model.TableReferences.Any())
+    {
+        <h3>Referenced By</h3>
+        <p class="text-muted">Tables that reference this table:</p>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Table</th>
+                    <th>Column</th>
+                    <th>References</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var reference in Model.TableReferences)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="/Schema/Table" asp-route-name="@reference.Table.TableName">@reference.Table.TableName</a>
+                        </td>
+                        <td>
+                            <a asp-page="/Schema/Column" asp-route-table="@reference.Table.TableName" asp-route-column="@reference.ForeignKey.Column">@reference.ForeignKey.Column</a>
+                        </td>
+                        <td>@Model.Table.TableName.@reference.ForeignKey.ReferencesColumn</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 }

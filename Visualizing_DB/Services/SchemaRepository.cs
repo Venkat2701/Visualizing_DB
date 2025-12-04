@@ -83,4 +83,21 @@ public class SchemaRepository
         
         return related;
     }
+
+    public IEnumerable<(TableInfo Table, ForeignKeyInfo ForeignKey)> GetTableReferences(string tableName)
+    {
+        return _schema.Tables
+            .SelectMany(table => table.ForeignKeys
+                .Where(fk => string.Equals(fk.ReferencesTable, tableName, StringComparison.OrdinalIgnoreCase))
+                .Select(fk => (Table: table, ForeignKey: fk)));
+    }
+
+    public IEnumerable<(TableInfo Table, ForeignKeyInfo ForeignKey)> GetColumnReferences(string tableName, string columnName)
+    {
+        return _schema.Tables
+            .SelectMany(table => table.ForeignKeys
+                .Where(fk => string.Equals(fk.ReferencesTable, tableName, StringComparison.OrdinalIgnoreCase) &&
+                           string.Equals(fk.ReferencesColumn, columnName, StringComparison.OrdinalIgnoreCase))
+                .Select(fk => (Table: table, ForeignKey: fk)));
+    }
 }
