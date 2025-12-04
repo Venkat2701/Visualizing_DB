@@ -1,0 +1,112 @@
+@page
+@model Visualizing_DB.Pages.Schema.IndexModel
+@{
+    ViewData["Title"] = "Database Schema";
+}
+
+<h1>Database Schema</h1>
+
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-8">
+            <input asp-for="SearchTerm" class="form-control" placeholder="Search by table name or column name..." />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        <div class="col-md-2">
+            <a asp-page="/Schema/Index" class="btn btn-secondary">Clear</a>
+        </div>
+    </div>
+</form>
+
+@if (Model.Results.Items.Any())
+{
+    <div class="mb-3">
+        <p>Showing @Model.Results.Items.Count of @Model.Results.TotalCount columns (Page @Model.Results.PageNumber of @Model.Results.TotalPages)</p>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Table Name</th>
+                <th>Column Name</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Info</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Results.Items)
+            {
+                <tr data-table="@item.Table.TableName" data-column="@item.Column.Name" 
+                    ondblclick="window.location.href='/Schema/Column?table=@Uri.EscapeDataString(item.Table.TableName)&column=@Uri.EscapeDataString(item.Column.Name)'">
+                    <td>
+                        <a asp-page="/Schema/Table" asp-route-name="@item.Table.TableName">@item.Table.TableName</a>
+                    </td>
+                    <td>@item.Column.Name</td>
+                    <td>@item.Column.Type</td>
+                    <td>@string.Join(", ", item.Column.Constraints)</td>
+                    <td>
+                        @if (item.Column.Constraints.Contains("PRIMARY KEY"))
+                        {
+                            <span class="badge bg-primary">PK</span>
+                        }
+                        @if (item.Table.ForeignKeys.Any(fk => fk.Column == item.Column.Name))
+                        {
+                            <span class="badge bg-secondary">FK</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-page="/Schema/Column" asp-route-table="@item.Table.TableName" asp-route-column="@item.Column.Name" class="btn btn-sm btn-outline-primary">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination">
+            @if (Model.Results.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-page="/Schema/Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-pageNumber="@(Model.Results.PageNumber - 1)" asp-route-pageSize="@Model.Results.PageSize">Previous</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            }
+
+            @if (Model.Results.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-page="/Schema/Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-pageNumber="@(Model.Results.PageNumber + 1)" asp-route-pageSize="@Model.Results.PageSize">Next</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+else
+{
+    <div class="alert alert-info">
+        @if (string.IsNullOrWhiteSpace(Model.SearchTerm))
+        {
+            <p>No columns found in the schema.</p>
+        }
+        else
+        {
+            <p>No columns found matching "@Model.SearchTerm".</p>
+        }
+    </div>
+}

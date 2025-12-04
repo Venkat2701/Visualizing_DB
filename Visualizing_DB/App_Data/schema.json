@@ -1,0 +1,612 @@
+{
+  "tables": [
+    {
+      "table_name": "Users",
+      "containing_file": "users.4gl",
+      "columns": [
+        { "name": "user_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "username", "type": "VARCHAR(50)", "constraints": ["NOT NULL", "UNIQUE"] },
+        { "name": "email", "type": "VARCHAR(100)", "constraints": ["NOT NULL"] },
+        { "name": "created_date", "type": "DATE", "constraints": [] },
+        { "name": "department_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["user_id"],
+      "foreign_keys": [
+        { "column": "department_id", "references_table": "Departments", "references_column": "dept_id" }
+      ],
+      "relationships": [
+        { "related_table": "Departments", "relation_type": "foreign_key", "via_column": "department_id" }
+      ],
+      "sample_data": [
+        { "user_id": 1, "username": "alice", "email": "alice@test.com", "created_date": "2024-01-10", "department_id": 10 },
+        { "user_id": 2, "username": "bob", "email": "bob@test.com", "created_date": "2024-02-11", "department_id": 11 },
+        { "user_id": 3, "username": "charlie", "email": "charlie@test.com", "created_date": "2024-03-15", "department_id": 12 }
+      ]
+    },
+    {
+      "table_name": "Departments",
+      "containing_file": "departments.4gl",
+      "columns": [
+        { "name": "dept_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "dept_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"] },
+        { "name": "manager_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["dept_id"],
+      "foreign_keys": [
+        { "column": "manager_id", "references_table": "Users", "references_column": "user_id" }
+      ],
+      "relationships": [
+        { "related_table": "Users", "relation_type": "foreign_key", "via_column": "manager_id" }
+      ],
+      "sample_data": [
+        { "dept_id": 10, "dept_name": "HR", "manager_id": 1 },
+        { "dept_id": 11, "dept_name": "Finance", "manager_id": 2 },
+        { "dept_id": 12, "dept_name": "IT", "manager_id": 3 }
+      ]
+    },
+    {
+      "table_name": "Orders",
+      "containing_file": "orders.4gl",
+      "columns": [
+        { "name": "order_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "user_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "order_date", "type": "DATE", "constraints": [] },
+        { "name": "total_amount", "type": "DECIMAL(10,2)", "constraints": [] },
+        { "name": "status", "type": "VARCHAR(20)", "constraints": [] }
+      ],
+      "primary_keys": ["order_id"],
+      "foreign_keys": [
+        { "column": "user_id", "references_table": "Users", "references_column": "user_id" }
+      ],
+      "relationships": [
+        { "related_table": "Users", "relation_type": "foreign_key", "via_column": "user_id" }
+      ],
+      "sample_data": [
+        { "order_id": 1001, "user_id": 1, "order_date": "2024-05-01", "total_amount": 150.50, "status": "Completed" },
+        { "order_id": 1002, "user_id": 2, "order_date": "2024-06-05", "total_amount": 250.00, "status": "Pending" },
+        { "order_id": 1003, "user_id": 3, "order_date": "2024-06-10", "total_amount": 300.75, "status": "Shipped" }
+      ]
+    },
+
+    {
+      "table_name": "Products",
+      "containing_file": "products.4gl",
+      "columns": [
+        { "name": "product_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "product_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"] },
+        { "name": "price", "type": "DECIMAL(10,2)", "constraints": [] },
+        { "name": "category_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["product_id"],
+      "foreign_keys": [
+        { "column": "category_id", "references_table": "Categories", "references_column": "category_id" }
+      ],
+      "relationships": [
+        { "related_table": "Categories", "relation_type": "foreign_key", "via_column": "category_id" }
+      ],
+      "sample_data": [
+        { "product_id": 1, "product_name": "Laptop", "price": 900.00, "category_id": 1 },
+        { "product_id": 2, "product_name": "Mouse", "price": 20.00, "category_id": 2 },
+        { "product_id": 3, "product_name": "Keyboard", "price": 30.00, "category_id": 2 }
+      ]
+    },
+
+    {
+      "table_name": "Categories",
+      "containing_file": "categories.4gl",
+      "columns": [
+        { "name": "category_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "category_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"] }
+      ],
+      "primary_keys": ["category_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "category_id": 1, "category_name": "Electronics" },
+        { "category_id": 2, "category_name": "Accessories" },
+        { "category_id": 3, "category_name": "Home Appliances" }
+      ]
+    },
+
+    {
+      "table_name": "OrderItems",
+      "containing_file": "orderitems.4gl",
+      "columns": [
+        { "name": "item_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "order_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "product_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "quantity", "type": "INTEGER", "constraints": ["NOT NULL"] }
+      ],
+      "primary_keys": ["item_id"],
+      "foreign_keys": [
+        { "column": "order_id", "references_table": "Orders", "references_column": "order_id" },
+        { "column": "product_id", "references_table": "Products", "references_column": "product_id" }
+      ],
+      "relationships": [
+        { "related_table": "Orders", "relation_type": "foreign_key", "via_column": "order_id" },
+        { "related_table": "Products", "relation_type": "foreign_key", "via_column": "product_id" }
+      ],
+      "sample_data": [
+        { "item_id": 1, "order_id": 1001, "product_id": 1, "quantity": 1 },
+        { "item_id": 2, "order_id": 1002, "product_id": 2, "quantity": 2 },
+        { "item_id": 3, "order_id": 1003, "product_id": 3, "quantity": 1 }
+      ]
+    },
+
+    {
+      "table_name": "Invoices",
+      "containing_file": "invoices.4gl",
+      "columns": [
+        { "name": "invoice_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "order_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "invoice_date", "type": "DATE", "constraints": [] },
+        { "name": "amount", "type": "DECIMAL(10,2)", "constraints": [] }
+      ],
+      "primary_keys": ["invoice_id"],
+      "foreign_keys": [
+        { "column": "order_id", "references_table": "Orders", "references_column": "order_id" }
+      ],
+      "relationships": [
+        { "related_table": "Orders", "relation_type": "foreign_key", "via_column": "order_id" }
+      ],
+      "sample_data": [
+        { "invoice_id": 5001, "order_id": 1001, "invoice_date": "2024-05-02", "amount": 150.50 },
+        { "invoice_id": 5002, "order_id": 1002, "invoice_date": "2024-06-06", "amount": 250.00 },
+        { "invoice_id": 5003, "order_id": 1003, "invoice_date": "2024-06-12", "amount": 300.75 }
+      ]
+    },
+
+    {
+      "table_name": "Payments",
+      "containing_file": "payments.4gl",
+      "columns": [
+        { "name": "payment_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "invoice_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "paid_date", "type": "DATE", "constraints": [] },
+        { "name": "mode", "type": "VARCHAR(20)", "constraints": [] }
+      ],
+      "primary_keys": ["payment_id"],
+      "foreign_keys": [
+        { "column": "invoice_id", "references_table": "Invoices", "references_column": "invoice_id" }
+      ],
+      "relationships": [
+        { "related_table": "Invoices", "relation_type": "foreign_key", "via_column": "invoice_id" }
+      ],
+      "sample_data": [
+        { "payment_id": 1, "invoice_id": 5001, "paid_date": "2024-05-03", "mode": "UPI" },
+        { "payment_id": 2, "invoice_id": 5002, "paid_date": "2024-06-07", "mode": "Card" },
+        { "payment_id": 3, "invoice_id": 5003, "paid_date": "2024-06-14", "mode": "Cash" }
+      ]
+    },
+
+    {
+      "table_name": "Employees",
+      "containing_file": "employees.4gl",
+      "columns": [
+        { "name": "emp_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"] },
+        { "name": "role", "type": "VARCHAR(50)", "constraints": [] },
+        { "name": "dept_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["emp_id"],
+      "foreign_keys": [
+        { "column": "dept_id", "references_table": "Departments", "references_column": "dept_id" }
+      ],
+      "relationships": [
+        { "related_table": "Departments", "relation_type": "foreign_key", "via_column": "dept_id" }
+      ],
+      "sample_data": [
+        { "emp_id": 101, "name": "Ravi", "role": "Developer", "dept_id": 12 },
+        { "emp_id": 102, "name": "Kiran", "role": "Analyst", "dept_id": 11 },
+        { "emp_id": 103, "name": "Mani", "role": "HR Exec", "dept_id": 10 }
+      ]
+    },
+
+    {
+      "table_name": "Projects",
+      "containing_file": "projects.4gl",
+      "columns": [
+        { "name": "project_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "project_name", "type": "VARCHAR(100)", "constraints": ["NOT NULL"] },
+        { "name": "dept_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["project_id"],
+      "foreign_keys": [
+        { "column": "dept_id", "references_table": "Departments", "references_column": "dept_id" }
+      ],
+      "relationships": [
+        { "related_table": "Departments", "relation_type": "foreign_key", "via_column": "dept_id" }
+      ],
+      "sample_data": [
+        { "project_id": 201, "project_name": "HR Automation", "dept_id": 10 },
+        { "project_id": 202, "project_name": "Finance AI", "dept_id": 11 },
+        { "project_id": 203, "project_name": "Infra Upgrade", "dept_id": 12 }
+      ]
+    },
+
+    {
+      "table_name": "EmployeeProjects",
+      "containing_file": "employeeprojects.4gl",
+      "columns": [
+        { "name": "mapping_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "project_id", "type": "INTEGER", "constraints": ["NOT NULL"] }
+      ],
+      "primary_keys": ["mapping_id"],
+      "foreign_keys": [
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" },
+        { "column": "project_id", "references_table": "Projects", "references_column": "project_id" }
+      ],
+      "relationships": [
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" },
+        { "related_table": "Projects", "relation_type": "foreign_key", "via_column": "project_id" }
+      ],
+      "sample_data": [
+        { "mapping_id": 1, "emp_id": 101, "project_id": 203 },
+        { "mapping_id": 2, "emp_id": 102, "project_id": 202 },
+        { "mapping_id": 3, "emp_id": 103, "project_id": 201 }
+      ]
+    },
+
+    {
+      "table_name": "Vendors",
+      "containing_file": "vendors.4gl",
+      "columns": [
+        { "name": "vendor_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "vendor_name", "type": "VARCHAR(100)", "constraints": [] },
+        { "name": "phone", "type": "VARCHAR(20)", "constraints": [] }
+      ],
+      "primary_keys": ["vendor_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "vendor_id": 1, "vendor_name": "TechMart", "phone": "9999999991" },
+        { "vendor_id": 2, "vendor_name": "GadgetsCo", "phone": "9999999992" },
+        { "vendor_id": 3, "vendor_name": "OfficePro", "phone": "9999999993" }
+      ]
+    },
+
+    {
+      "table_name": "PurchaseOrders",
+      "containing_file": "purchaseorders.4gl",
+      "columns": [
+        { "name": "po_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "vendor_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "po_date", "type": "DATE", "constraints": [] }
+      ],
+      "primary_keys": ["po_id"],
+      "foreign_keys": [
+        { "column": "vendor_id", "references_table": "Vendors", "references_column": "vendor_id" }
+      ],
+      "relationships": [
+        { "related_table": "Vendors", "relation_type": "foreign_key", "via_column": "vendor_id" }
+      ],
+      "sample_data": [
+        { "po_id": 1, "vendor_id": 1, "po_date": "2024-03-20" },
+        { "po_id": 2, "vendor_id": 2, "po_date": "2024-04-18" },
+        { "po_id": 3, "vendor_id": 3, "po_date": "2024-05-10" }
+      ]
+    },
+
+    {
+      "table_name": "PurchaseItems",
+      "containing_file": "purchaseitems.4gl",
+      "columns": [
+        { "name": "pi_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "po_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "product_id", "type": "INTEGER", "constraints": ["NOT NULL"] },
+        { "name": "qty", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["pi_id"],
+      "foreign_keys": [
+        { "column": "po_id", "references_table": "PurchaseOrders", "references_column": "po_id" },
+        { "column": "product_id", "references_table": "Products", "references_column": "product_id" }
+      ],
+      "relationships": [
+        { "related_table": "PurchaseOrders", "relation_type": "foreign_key", "via_column": "po_id" },
+        { "related_table": "Products", "relation_type": "foreign_key", "via_column": "product_id" }
+      ],
+      "sample_data": [
+        { "pi_id": 1, "po_id": 1, "product_id": 1, "qty": 10 },
+        { "pi_id": 2, "po_id": 2, "product_id": 2, "qty": 50 },
+        { "pi_id": 3, "po_id": 3, "product_id": 3, "qty": 40 }
+      ]
+    },
+
+    {
+      "table_name": "Assets",
+      "containing_file": "assets.4gl",
+      "columns": [
+        { "name": "asset_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "asset_name", "type": "VARCHAR(100)", "constraints": [] },
+        { "name": "purchase_date", "type": "DATE", "constraints": [] }
+      ],
+      "primary_keys": ["asset_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "asset_id": 1, "asset_name": "Server", "purchase_date": "2023-05-10" },
+        { "asset_id": 2, "asset_name": "Router", "purchase_date": "2023-08-22" },
+        { "asset_id": 3, "asset_name": "Printer", "purchase_date": "2023-11-30" }
+      ]
+    },
+
+    {
+      "table_name": "AssetAllocations",
+      "containing_file": "assetallocations.4gl",
+      "columns": [
+        { "name": "allocation_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "asset_id", "type": "INTEGER", "constraints": [] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["allocation_id"],
+      "foreign_keys": [
+        { "column": "asset_id", "references_table": "Assets", "references_column": "asset_id" },
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" }
+      ],
+      "relationships": [
+        { "related_table": "Assets", "relation_type": "foreign_key", "via_column": "asset_id" },
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" }
+      ],
+      "sample_data": [
+        { "allocation_id": 1, "asset_id": 1, "emp_id": 101 },
+        { "allocation_id": 2, "asset_id": 2, "emp_id": 102 },
+        { "allocation_id": 3, "asset_id": 3, "emp_id": 103 }
+      ]
+    },
+
+    {
+      "table_name": "Tickets",
+      "containing_file": "tickets.4gl",
+      "columns": [
+        { "name": "ticket_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": [] },
+        { "name": "issue", "type": "VARCHAR(200)", "constraints": [] },
+        { "name": "status", "type": "VARCHAR(20)", "constraints": [] }
+      ],
+      "primary_keys": ["ticket_id"],
+      "foreign_keys": [
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" }
+      ],
+      "relationships": [
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" }
+      ],
+      "sample_data": [
+        { "ticket_id": 1, "emp_id": 101, "issue": "System Slow", "status": "Open" },
+        { "ticket_id": 2, "emp_id": 102, "issue": "Login Error", "status": "InProgress" },
+        { "ticket_id": 3, "emp_id": 103, "issue": "Email Not Working", "status": "Closed" }
+      ]
+    },
+
+    {
+      "table_name": "Shifts",
+      "containing_file": "shifts.4gl",
+      "columns": [
+        { "name": "shift_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "shift_name", "type": "VARCHAR(50)", "constraints": [] }
+      ],
+      "primary_keys": ["shift_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "shift_id": 1, "shift_name": "Day" },
+        { "shift_id": 2, "shift_name": "Evening" },
+        { "shift_id": 3, "shift_name": "Night" }
+      ]
+    },
+
+    {
+      "table_name": "EmployeeShifts",
+      "containing_file": "employeeshifts.4gl",
+      "columns": [
+        { "name": "es_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": [] },
+        { "name": "shift_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["es_id"],
+      "foreign_keys": [
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" },
+        { "column": "shift_id", "references_table": "Shifts", "references_column": "shift_id" }
+      ],
+      "relationships": [
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" },
+        { "related_table": "Shifts", "relation_type": "foreign_key", "via_column": "shift_id" }
+      ],
+      "sample_data": [
+        { "es_id": 1, "emp_id": 101, "shift_id": 1 },
+        { "es_id": 2, "emp_id": 102, "shift_id": 2 },
+        { "es_id": 3, "emp_id": 103, "shift_id": 3 }
+      ]
+    },
+
+    {
+      "table_name": "Leaves",
+      "containing_file": "leaves.4gl",
+      "columns": [
+        { "name": "leave_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": [] },
+        { "name": "from_date", "type": "DATE", "constraints": [] },
+        { "name": "to_date", "type": "DATE", "constraints": [] }
+      ],
+      "primary_keys": ["leave_id"],
+      "foreign_keys": [
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" }
+      ],
+      "relationships": [
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" }
+      ],
+      "sample_data": [
+        { "leave_id": 1, "emp_id": 101, "from_date": "2024-01-05", "to_date": "2024-01-07" },
+        { "leave_id": 2, "emp_id": 102, "from_date": "2024-02-01", "to_date": "2024-02-03" },
+        { "leave_id": 3, "emp_id": 103, "from_date": "2024-02-05", "to_date": "2024-02-06" }
+      ]
+    },
+
+    {
+      "table_name": "Attendance",
+      "containing_file": "attendance.4gl",
+      "columns": [
+        { "name": "att_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": [] },
+        { "name": "date", "type": "DATE", "constraints": [] },
+        { "name": "status", "type": "VARCHAR(20)", "constraints": [] }
+      ],
+      "primary_keys": ["att_id"],
+      "foreign_keys": [
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" }
+      ],
+      "relationships": [
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" }
+      ],
+      "sample_data": [
+        { "att_id": 1, "emp_id": 101, "date": "2024-01-10", "status": "Present" },
+        { "att_id": 2, "emp_id": 102, "date": "2024-01-10", "status": "Absent" },
+        { "att_id": 3, "emp_id": 103, "date": "2024-01-10", "status": "Present" }
+      ]
+    },
+
+    {
+      "table_name": "Training",
+      "containing_file": "training.4gl",
+      "columns": [
+        { "name": "training_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "training_name", "type": "VARCHAR(100)", "constraints": [] }
+      ],
+      "primary_keys": ["training_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "training_id": 1, "training_name": "Security Awareness" },
+        { "training_id": 2, "training_name": "Leadership Skills" },
+        { "training_id": 3, "training_name": "Cloud Basics" }
+      ]
+    },
+
+    {
+      "table_name": "EmployeeTraining",
+      "containing_file": "employeetraining.4gl",
+      "columns": [
+        { "name": "et_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "emp_id", "type": "INTEGER", "constraints": [] },
+        { "name": "training_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["et_id"],
+      "foreign_keys": [
+        { "column": "emp_id", "references_table": "Employees", "references_column": "emp_id" },
+        { "column": "training_id", "references_table": "Training", "references_column": "training_id" }
+      ],
+      "relationships": [
+        { "related_table": "Employees", "relation_type": "foreign_key", "via_column": "emp_id" },
+        { "related_table": "Training", "relation_type": "foreign_key", "via_column": "training_id" }
+      ],
+      "sample_data": [
+        { "et_id": 1, "emp_id": 101, "training_id": 1 },
+        { "et_id": 2, "emp_id": 102, "training_id": 2 },
+        { "et_id": 3, "emp_id": 103, "training_id": 3 }
+      ]
+    },
+
+    {
+      "table_name": "Notifications",
+      "containing_file": "notifications.4gl",
+      "columns": [
+        { "name": "notification_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "user_id", "type": "INTEGER", "constraints": [] },
+        { "name": "message", "type": "VARCHAR(200)", "constraints": [] }
+      ],
+      "primary_keys": ["notification_id"],
+      "foreign_keys": [
+        { "column": "user_id", "references_table": "Users", "references_column": "user_id" }
+      ],
+      "relationships": [
+        { "related_table": "Users", "relation_type": "foreign_key", "via_column": "user_id" }
+      ],
+      "sample_data": [
+        { "notification_id": 1, "user_id": 1, "message": "Order dispatched" },
+        { "notification_id": 2, "user_id": 2, "message": "New invoice generated" },
+        { "notification_id": 3, "user_id": 3, "message": "Password will expire soon" }
+      ]
+    },
+
+    {
+      "table_name": "Logs",
+      "containing_file": "logs.4gl",
+      "columns": [
+        { "name": "log_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "user_id", "type": "INTEGER", "constraints": [] },
+        { "name": "action", "type": "VARCHAR(150)", "constraints": [] }
+      ],
+      "primary_keys": ["log_id"],
+      "foreign_keys": [
+        { "column": "user_id", "references_table": "Users", "references_column": "user_id" }
+      ],
+      "relationships": [
+        { "related_table": "Users", "relation_type": "foreign_key", "via_column": "user_id" }
+      ],
+      "sample_data": [
+        { "log_id": 1, "user_id": 1, "action": "Login Success" },
+        { "log_id": 2, "user_id": 2, "action": "Updated Profile" },
+        { "log_id": 3, "user_id": 3, "action": "Created Order" }
+      ]
+    },
+
+    {
+      "table_name": "AuditTrail",
+      "containing_file": "audittrail.4gl",
+      "columns": [
+        { "name": "audit_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "entity", "type": "VARCHAR(100)", "constraints": [] },
+        { "name": "entity_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["audit_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "audit_id": 1, "entity": "Users", "entity_id": 1 },
+        { "audit_id": 2, "entity": "Orders", "entity_id": 1001 },
+        { "audit_id": 3, "entity": "Employees", "entity_id": 103 }
+      ]
+    },
+
+    {
+      "table_name": "Roles",
+      "containing_file": "roles.4gl",
+      "columns": [
+        { "name": "role_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "role_name", "type": "VARCHAR(50)", "constraints": [] }
+      ],
+      "primary_keys": ["role_id"],
+      "foreign_keys": [],
+      "relationships": [],
+      "sample_data": [
+        { "role_id": 1, "role_name": "Admin" },
+        { "role_id": 2, "role_name": "User" },
+        { "role_id": 3, "role_name": "Manager" }
+      ]
+    },
+
+    {
+      "table_name": "UserRoles",
+      "containing_file": "userroles.4gl",
+      "columns": [
+        { "name": "ur_id", "type": "INTEGER", "constraints": ["PRIMARY KEY"] },
+        { "name": "user_id", "type": "INTEGER", "constraints": [] },
+        { "name": "role_id", "type": "INTEGER", "constraints": [] }
+      ],
+      "primary_keys": ["ur_id"],
+      "foreign_keys": [
+        { "column": "user_id", "references_table": "Users", "references_column": "user_id" },
+        { "column": "role_id", "references_table": "Roles", "references_column": "role_id" }
+      ],
+      "relationships": [
+        { "related_table": "Users", "relation_type": "foreign_key", "via_column": "user_id" },
+        { "related_table": "Roles", "relation_type": "foreign_key", "via_column": "role_id" }
+      ],
+      "sample_data": [
+        { "ur_id": 1, "user_id": 1, "role_id": 1 },
+        { "ur_id": 2, "user_id": 2, "role_id": 2 },
+        { "ur_id": 3, "user_id": 3, "role_id": 3 }
+      ]
+    }
+  ]
+}

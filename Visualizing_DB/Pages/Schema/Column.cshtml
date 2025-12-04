@@ -1,0 +1,179 @@
+@page
+@model Visualizing_DB.Pages.Schema.ColumnModel
+@{
+    ViewData["Title"] = $"Column: {Model.TableInfo?.TableName}.{Model.ColumnInfo?.Name}";
+}
+
+@if (Model.TableInfo == null || Model.ColumnInfo == null)
+{
+    <div class="alert alert-danger">
+        <h4>Column Not Found</h4>
+        <p>The column "@Model.Column" in table "@Model.Table" was not found in the schema.</p>
+        <a asp-page="/Schema/Index" class="btn btn-primary">Back to Schema</a>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Column: @Model.TableInfo.TableName.@Model.ColumnInfo.Name</h1>
+        <div>
+            <a asp-page="/Schema/Table" asp-route-name="@Model.TableInfo.TableName" class="btn btn-outline-secondary me-2">Back to Table</a>
+            <a asp-page="/Schema/Index" class="btn btn-outline-secondary">Back to Schema</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Column Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Table:</th>
+                            <td>
+                                <a asp-page="/Schema/Table" asp-route-name="@Model.TableInfo.TableName">@Model.TableInfo.TableName</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Column Name:</th>
+                            <td>@Model.ColumnInfo.Name</td>
+                        </tr>
+                        <tr>
+                            <th>Data Type:</th>
+                            <td>@Model.ColumnInfo.Type</td>
+                        </tr>
+                        <tr>
+                            <th>Constraints:</th>
+                            <td>
+                                @if (Model.ColumnInfo.Constraints.Any())
+                                {
+                                    @foreach (var constraint in Model.ColumnInfo.Constraints)
+                                    {
+                                        <span class="badge bg-info me-1">@constraint</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">None</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Primary Key:</th>
+                            <td>
+                                @if (Model.TableInfo.PrimaryKeys.Contains(Model.ColumnInfo.Name))
+                                {
+                                    <span class="badge bg-primary">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No</span>
+                                }
+                            </td>
+                        </tr>
+                        @if (!string.IsNullOrWhiteSpace(Model.TableInfo.ContainingFile))
+                        {
+                            <tr>
+                                <th>Containing File:</th>
+                                <td>@Model.TableInfo.ContainingFile</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            @if (Model.ColumnForeignKeys.Any())
+            {
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Foreign Key References</h5>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var fk in Model.ColumnForeignKeys)
+                        {
+                            <div class="mb-2">
+                                <strong>References:</strong>
+                                <a asp-page="/Schema/Table" asp-route-name="@fk.ReferencesTable">@fk.ReferencesTable</a>.<strong>@fk.ReferencesColumn</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.ColumnRelationships.Any())
+            {
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Relationships</h5>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var rel in Model.ColumnRelationships)
+                        {
+                            <div class="mb-2">
+                                <strong>@rel.RelationType</strong> relationship with
+                                <a asp-page="/Schema/Table" asp-route-name="@rel.RelatedTable">@rel.RelatedTable</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (!Model.ColumnForeignKeys.Any() && !Model.ColumnRelationships.Any())
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Relationships</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">This column has no foreign key references or relationships.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h5>All Columns in @Model.TableInfo.TableName</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Type</th>
+                        <th>Constraints</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var col in Model.TableInfo.Columns)
+                    {
+                        <tr class="@(col.Name == Model.ColumnInfo.Name ? "table-warning" : "")">
+                            <td>
+                                @if (col.Name == Model.ColumnInfo.Name)
+                                {
+                                    <strong>@col.Name</strong> <span class="badge bg-warning text-dark">Current</span>
+                                }
+                                else
+                                {
+                                    @col.Name
+                                }
+                            </td>
+                            <td>@col.Type</td>
+                            <td>@string.Join(", ", col.Constraints)</td>
+                            <td>
+                                @if (col.Name != Model.ColumnInfo.Name)
+                                {
+                                    <a asp-page="/Schema/Column" asp-route-table="@Model.TableInfo.TableName" asp-route-column="@col.Name" class="btn btn-sm btn-outline-primary">View</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

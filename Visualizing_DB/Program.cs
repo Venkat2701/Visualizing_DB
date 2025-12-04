@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<Visualizing_DB.Services.SchemaRepository>();
 
 var app = builder.Build();
 
@@ -21,5 +22,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+// Redirect root to Schema/Index
+app.MapGet("/", () => Results.Redirect("/Schema/Index"));
 
 app.Run();

@@ -1,0 +1,152 @@
+@page
+@model Visualizing_DB.Pages.Schema.TableModel
+@{
+    ViewData["Title"] = $"Table: {Model.Table?.TableName}";
+}
+
+@if (Model.Table == null)
+{
+    <div class="alert alert-danger">
+        <h4>Table Not Found</h4>
+        <p>The table "@Model.Name" was not found in the schema.</p>
+        <a asp-page="/Schema/Index" class="btn btn-primary">Back to Schema</a>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Table: @Model.Table.TableName</h1>
+        <a asp-page="/Schema/Index" class="btn btn-outline-secondary">Back to Schema</a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Table.ContainingFile))
+    {
+        <div class="mb-3">
+            <strong>Containing File:</strong> @Model.Table.ContainingFile
+        </div>
+    }
+
+    <h3>Columns</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Column Name</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Primary Key</th>
+                <th>Foreign Key</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var column in Model.Table.Columns)
+            {
+                <tr>
+                    <td>@column.Name</td>
+                    <td>@column.Type</td>
+                    <td>@string.Join(", ", column.Constraints)</td>
+                    <td>
+                        @if (Model.Table.PrimaryKeys.Contains(column.Name))
+                        {
+                            <span class="badge bg-primary">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No</span>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var fk = Model.Table.ForeignKeys.FirstOrDefault(f => f.Column == column.Name);
+                        }
+                        @if (fk != null)
+                        {
+                            <span class="badge bg-secondary">@fk.ReferencesTable.@fk.ReferencesColumn</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-page="/Schema/Column" asp-route-table="@Model.Table.TableName" asp-route-column="@column.Name" class="btn btn-sm btn-outline-primary">View Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (Model.Table.PrimaryKeys.Any())
+    {
+        <h3>Primary Keys</h3>
+        <ul class="list-group mb-4">
+            @foreach (var pk in Model.Table.PrimaryKeys)
+            {
+                <li class="list-group-item">@pk</li>
+            }
+        </ul>
+    }
+
+    @if (Model.Table.ForeignKeys.Any())
+    {
+        <h3>Foreign Keys</h3>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>References Table</th>
+                    <th>References Column</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fk in Model.Table.ForeignKeys)
+                {
+                    <tr>
+                        <td>@fk.Column</td>
+                        <td>
+                            <a asp-page="/Schema/Table" asp-route-name="@fk.ReferencesTable">@fk.ReferencesTable</a>
+                        </td>
+                        <td>@fk.ReferencesColumn</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (Model.Table.Relationships.Any())
+    {
+        <h3>Relationships</h3>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Related Table</th>
+                    <th>Relation Type</th>
+                    <th>Via Column</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rel in Model.Table.Relationships)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="/Schema/Table" asp-route-name="@rel.RelatedTable">@rel.RelatedTable</a>
+                        </td>
+                        <td>@rel.RelationType</td>
+                        <td>@rel.ViaColumn</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (Model.RelatedTables.Any())
+    {
+        <h3>Related Tables</h3>
+        <div class="mb-3">
+            @foreach (var relatedTable in Model.RelatedTables)
+            {
+                <a asp-page="/Schema/Table" asp-route-name="@relatedTable" class="btn btn-outline-info btn-sm me-2 mb-2">@relatedTable</a>
+            }
+        </div>
+    }
+}
